@@ -65,4 +65,8 @@ class EdgeConv(nn.Module):
         else:
             raise ValueError(f"Unsupported aggregation: {self.aggr}")
         
+<<<<<<< HEAD
         return out
+=======
+        return out
+>>>>>>> e5e534d (update)
