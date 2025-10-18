@@ -6,7 +6,7 @@ from hgq.layers import QDense, QBatchNormalization
 from torch import nn
 
 # from torch_geometric.nn.conv import GraphConv, EdgeConv, GCNConv
-from EdgeConv_imple import EdgeConv 
+from EdgeConv_HGQ import EdgeConv 
 
 class GraphMETNetwork(nn.Module):
     def __init__ (self, continuous_dim, cat_dim, norm, output_dim=1, hidden_dim=32, conv_depth=1):
