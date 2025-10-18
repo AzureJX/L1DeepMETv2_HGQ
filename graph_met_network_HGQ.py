@@ -1,12 +1,12 @@
 import os
 os.environ["KERAS_BACKEND"] = "torch"
 import torch
-from hgq.layers import QDense, QBatchNormalization
+from hgq.layers import QDense, QBatchNormalization, QUnaryFunctionLUT
 
 from torch import nn
 
 # from torch_geometric.nn.conv import GraphConv, EdgeConv, GCNConv
-from EdgeConv_HGQ import EdgeConv 
+from EdgeConv_imple import EdgeConv 
 
 class GraphMETNetwork(nn.Module):
     def __init__ (self, continuous_dim, cat_dim, norm, output_dim=1, hidden_dim=32, conv_depth=1):
@@ -21,18 +21,19 @@ class GraphMETNetwork(nn.Module):
         # self.embed_continuous = nn.Sequential(QDense(units = hidden_dim//2), # output dims
         #                                       nn.ELU())
         self.embed_continuous_dense = QDense(units=hidden_dim//2)
-        self.embed_continuous_elu = nn.ELU()
+        # kernal / input / bias config: kq_conf, iq_conf, bq_conf
+        self.embed_continuous_elu = QUnaryFunctionLUT(activation='elu') # iq_conf, oq_conf
 
         # self.embed_categorical = nn.Sequential(QDense(units = hidden_dim//2),
         #                                        nn.ELU())
         self.embed_categorical_dense = QDense(units=hidden_dim//2)
-        self.embed_categorical_elu = nn.ELU()
+        self.embed_categorical_elu = QUnaryFunctionLUT(activation='elu')
 
         # self.encode_all = nn.Sequential(QDense(units = hidden_dim),
         #                                 nn.ELU())
         self.encode_all_dense = QDense(units=hidden_dim)
-        self.encode_all_elu = nn.ELU()
-        self.bn_all = QBatchNormalization(axis=-1)
+        self.encode_all_elu = QUnaryFunctionLUT(activation='elu')
+        self.bn_all = QBatchNormalization(axis=-1) # kq_conf, iq_conf, bq_conf
  
         self.conv_continuous = nn.ModuleList()        
         for _ in range(conv_depth):
@@ -49,7 +50,7 @@ class GraphMETNetwork(nn.Module):
         #                             nn.ELU(),
         #                             QDense(units = output_dim))
         self.output_dense1 = QDense(units=hidden_dim//2)
-        self.output_elu = nn.ELU()
+        self.output_elu = QUnaryFunctionLUT(activation='elu')
         self.output_dense2 = QDense(units=output_dim)
 
         self.pdgs = [1, 2, 11, 13, 22, 130, 211]
