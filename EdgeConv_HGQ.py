@@ -3,7 +3,7 @@ os.environ["KERAS_BACKEND"] = "torch"
 
 import torch
 import torch.nn as nn
-from hgq.layers import QDense, QBatchNormalization
+from hgq.layers import QDense, QBatchNormalization, QUnaryFunctionLUT
 
 
 class EdgeConv(nn.Module):
@@ -21,7 +21,8 @@ class EdgeConv(nn.Module):
         # Dense MLP with depth=1
         self.linear = QDense(units=out_channels)
         self.bn = QBatchNormalization(axis=-1)
-        self.relu = nn.ReLU()
+        self.relu = QUnaryFunctionLUT(activation='relu') 
+        # input / output configuration: iq_conf, oq_conf
     
     def forward(self, x, edge_index, batch=None):
         """        
