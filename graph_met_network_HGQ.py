@@ -18,6 +18,7 @@ class GraphMETNetwork(nn.Module):
         self.embed_charge = nn.Embedding(3, hidden_dim//4)
         self.embed_pdgid = nn.Embedding(7, hidden_dim//4)
         
+<<<<<<< HEAD
         # self.embed_continuous = nn.Sequential(QDense(units = hidden_dim//2), # output dims
         #                                       nn.ELU())
         self.embed_continuous_dense = QDense(units=hidden_dim//2)
@@ -32,26 +33,48 @@ class GraphMETNetwork(nn.Module):
         # self.encode_all = nn.Sequential(QDense(units = hidden_dim),
         #                                 nn.ELU())
         self.encode_all_dense = QDense(units=hidden_dim)
+=======
+
+        self.embed_continuous_dense = QDense(hidden_dim//2) # output
+        # self.embed_continuous_dense.build((None, continuous_dim)) # input
+        # kernal / input / bias config: kq_conf, iq_conf, bq_conf
+        self.embed_continuous_elu = QUnaryFunctionLUT(activation='elu') # iq_conf, oq_conf
+
+        self.embed_categorical_dense = QDense(hidden_dim//2)
+        self.embed_categorical_elu = QUnaryFunctionLUT(activation='elu')
+
+        self.encode_all_dense = QDense(hidden_dim)
+>>>>>>> 337ef2e (fixed QDense input)
         self.encode_all_elu = QUnaryFunctionLUT(activation='elu')
         self.bn_all = QBatchNormalization(axis=-1) # kq_conf, iq_conf, bq_conf
  
         self.conv_continuous = nn.ModuleList()        
         for _ in range(conv_depth):
+<<<<<<< HEAD
             # mesg = nn.Sequential(QDense(units = hidden_dim))
             # self.conv_continuous.append(nn.ModuleList())
             # self.conv_continuous[-1].append(EdgeConv(nn=mesg).jittable())
             # self.conv_continuous[-1].append(QBatchNormalization(axis=-1))
             mesg = QDense(units=hidden_dim)
+=======
+            mesg = QDense(hidden_dim)
+>>>>>>> 337ef2e (fixed QDense input)
             conv_layer = EdgeConv(nn=mesg).jittable()
             bn_layer = QBatchNormalization(axis=-1)
             self.conv_continuous.append(nn.ModuleList([conv_layer, bn_layer]))
 
+<<<<<<< HEAD
         # self.output = nn.Sequential(QDense(units = hidden_dim//2),
         #                             nn.ELU(),
         #                             QDense(units = output_dim))
         self.output_dense1 = QDense(units=hidden_dim//2)
         self.output_elu = QUnaryFunctionLUT(activation='elu')
         self.output_dense2 = QDense(units=output_dim)
+=======
+        self.output_dense1 = QDense(hidden_dim//2)
+        self.output_elu = QUnaryFunctionLUT(activation='elu')
+        self.output_dense2 = QDense(output_dim)
+>>>>>>> 337ef2e (fixed QDense input)
 
         self.pdgs = [1, 2, 11, 13, 22, 130, 211]
 
@@ -61,7 +84,10 @@ class GraphMETNetwork(nn.Module):
 
         x_cont *= self.datanorm
 
+<<<<<<< HEAD
         # emb_cont = self.embed_continuous(x_cont)   
+=======
+>>>>>>> 337ef2e (fixed QDense input)
         emb_cont = self.embed_continuous_dense(x_cont)
         emb_cont = self.embed_continuous_elu(emb_cont)
 
@@ -72,12 +98,18 @@ class GraphMETNetwork(nn.Module):
             pdg_remap = torch.where(pdg_remap == pdgval, torch.full_like(pdg_remap, i), pdg_remap)
         emb_pdg = self.embed_pdgid(pdg_remap)
 
+<<<<<<< HEAD
         # emb_cat = self.embed_categorical(torch.cat([emb_chrg, emb_pdg], dim=1))
+=======
+>>>>>>> 337ef2e (fixed QDense input)
         emb_cat = torch.cat([emb_chrg, emb_pdg], dim=1)
         emb_cat = self.embed_categorical_dense(emb_cat)
         emb_cat = self.embed_categorical_elu(emb_cat)
 
+<<<<<<< HEAD
         # emb = self.bn_all(self.encode_all(torch.cat([emb_cat, emb_cont], dim=1)))
+=======
+>>>>>>> 337ef2e (fixed QDense input)
         emb = torch.cat([emb_cat, emb_cont], dim=1)
         emb = self.encode_all_dense(emb)
         emb = self.encode_all_elu(emb)
@@ -97,4 +129,8 @@ class GraphMETNetwork(nn.Module):
         out = self.output_elu(out)
         out = self.output_dense2(out)
         
+<<<<<<< HEAD
         return out.squeeze(-1)
+=======
+        return out.squeeze(-1)
+>>>>>>> 337ef2e (fixed QDense input)
