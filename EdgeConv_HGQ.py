@@ -19,7 +19,7 @@ class EdgeConv(nn.Module):
         self.aggr = aggr
         
         # Dense MLP with depth=1
-        self.linear = QDense(units=out_channels)
+        self.linear = QDense(out_channels)
         self.bn = QBatchNormalization(axis=-1)
         self.relu = QUnaryFunctionLUT(activation='relu') 
         # input / output configuration: iq_conf, oq_conf
@@ -65,12 +65,4 @@ class EdgeConv(nn.Module):
         else:
             raise ValueError(f"Unsupported aggregation: {self.aggr}")
         
-<<<<<<< HEAD
-<<<<<<< HEAD
         return out
-=======
-        return out
->>>>>>> e5e534d (update)
-=======
-        return out
->>>>>>> c56ae96 (updated QDense)
