@@ -66,7 +66,11 @@ class EdgeConv(nn.Module):
             raise ValueError(f"Unsupported aggregation: {self.aggr}")
         
 <<<<<<< HEAD
+<<<<<<< HEAD
         return out
 =======
         return out
 >>>>>>> e5e534d (update)
+=======
+        return out
+>>>>>>> c56ae96 (updated QDense)
