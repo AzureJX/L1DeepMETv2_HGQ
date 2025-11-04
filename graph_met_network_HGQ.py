@@ -83,8 +83,4 @@ class GraphMETNetwork(nn.Module):
         out = self.output_elu(out)
         out = self.output_dense2(out)
         
-<<<<<<< HEAD
         return out.squeeze(-1)
-=======
-        return out.squeeze(-1)
->>>>>>> 337ef2e (fixed QDense input)
