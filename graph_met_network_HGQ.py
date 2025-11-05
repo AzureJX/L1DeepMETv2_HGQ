@@ -50,7 +50,7 @@ class GraphMETNetwork(nn.Module):
 
         x_cont *= self.datanorm
 
-        emb_cont = self.embed_continuous_dense(x_cont)
+        emb_cont = self.embed_continuous_dense(x_cont, training = True)
         emb_cont = self.embed_continuous_elu(emb_cont)
 
         emb_chrg = self.embed_charge(x_cat[:, 1] + 1)
@@ -61,11 +61,11 @@ class GraphMETNetwork(nn.Module):
         emb_pdg = self.embed_pdgid(pdg_remap)
 
         emb_cat = torch.cat([emb_chrg, emb_pdg], dim=1)
-        emb_cat = self.embed_categorical_dense(emb_cat)
+        emb_cat = self.embed_categorical_dense(emb_cat, training = True)
         emb_cat = self.embed_categorical_elu(emb_cat)
 
         emb = torch.cat([emb_cat, emb_cont], dim=1)
-        emb = self.encode_all_dense(emb)
+        emb = self.encode_all_dense(emb, training = True)
         emb = self.encode_all_elu(emb)
         emb = self.bn_all(emb)
 
@@ -79,8 +79,8 @@ class GraphMETNetwork(nn.Module):
             emb = emb + bn_layer(conv_layer(emb, edge_index))
                 
         # out = self.output(emb)
-        out = self.output_dense1(emb)
+        out = self.output_dense1(emb, training = True)
         out = self.output_elu(out)
-        out = self.output_dense2(out)
+        out = self.output_dense2(out, training = True)
         
         return out.squeeze(-1)
