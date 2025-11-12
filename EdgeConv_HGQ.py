@@ -44,9 +44,9 @@ class EdgeConv(nn.Module):
         edge_feat = torch.cat([x_i, x_j - x_i], dim=1)  # [E, 2F]
         
         # Apply MLP
-        edge_feat = self.linear(edge_feat)        # [E, out_channels]
-        edge_feat = self.bn(edge_feat)            # [E, out_channels]
-        edge_feat = self.relu(edge_feat)          # [E, out_channels]        
+        edge_feat = self.linear(edge_feat, training = True) # [E, out_channels]
+        edge_feat = self.bn(edge_feat, training = True)     # [E, out_channels]
+        edge_feat = self.relu(edge_feat, training = True)   # [E, out_channels]        
         
         # Aggregate using scatter
         N = x.size(0)
